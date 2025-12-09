@@ -71,6 +71,7 @@ def krmeni():
     print(f"{kocka["jmeno"]} vypadá šťastně. \nHlad je {kocka["hlad"]}")
     zprava.text = (f"{kocka["jmeno"]} vypadá šťastně.")
     ui.notify(f"Hlad je {kocka["hlad"]}")
+    zkontroluj_status()
 
 def hra():
     kocka["hlad"] += 10
@@ -81,6 +82,7 @@ def hra():
     zprava.text = (f"{kocka["jmeno"]} je velmi šťastný.")
     obrazek.source = strih(0, 64)
     ui.notify(f"Hlad je {kocka["hlad"]}. \nŽízeň je {kocka["zizen"]}. \nEnergie je {kocka["energie"]}")
+    zkontroluj_status()
 
 async def spanek():
     kocka["energie"] = 100
@@ -90,12 +92,14 @@ async def spanek():
     await asyncio.sleep(1)
     zprava.text = (f"\n{kocka['jmeno']} je odpočatý.")
     ui.notify(f"Energie {kocka['jmeno']} je {kocka['energie']}")
+    zkontroluj_status()
 
 def napit():
     kocka["zizen"] -= 10
     print(f"{kocka['jmeno']} se napil. \nŽízeň je {kocka['zizen']}")
     zprava.text = (f"{kocka['jmeno']} se napil.")
     ui.notify(f"Žízeň je {kocka['zizen']}")
+    zkontroluj_status()
 
 def hladoveni():
     global puvodni_cas
@@ -132,6 +136,9 @@ def zkontroluj_status():
         print(f"{kocka["jmeno"]} umřel.")
         ui.shutdown()
         exit()
+    hladoveni()
+    starnuti()
+    save()
 
 def vypis_status():
     print(f"""
@@ -164,7 +171,7 @@ def main():
         "Hra": hra,
         "Spánek": spanek,
         "Napít": napit,
-        "Status": vypis_status,
+        # "Status": vypis_status,
 
     }
 
@@ -206,10 +213,10 @@ def main():
     
     ui.run(native=True)
 
-    hladoveni()
-    starnuti()
-    save()
-    zkontroluj_status()
+    # hladoveni()
+    # starnuti()
+    # save()
+    # zkontroluj_status()
 
 
 main()
