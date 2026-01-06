@@ -2,7 +2,7 @@ from sys import exit
 import datetime as dt
 import json
 import os
-from nicegui import ui
+from nicegui import ui, app
 import asyncio
 from PIL import Image
 
@@ -70,6 +70,7 @@ def krmeni():
     kocka["hlad"] -= 10
     print(f"{kocka["jmeno"]} vypadá šťastně. \nHlad je {kocka["hlad"]}")
     zprava.text = (f"{kocka["jmeno"]} vypadá šťastně.")
+    obrazek.source = strih(2, 65)
     ui.notify(f"Hlad je {kocka["hlad"]}")
     zkontroluj_status()
 
@@ -80,14 +81,14 @@ def hra():
     kocka["nestastnost"] = False
     print(f"{kocka["jmeno"]} vypadá šťastně. \nHlad je {kocka["hlad"]}. \nŽízeň je {kocka["zizen"]}. \nEnergie je {kocka["energie"]}")
     zprava.text = (f"{kocka["jmeno"]} je velmi šťastný.")
-    obrazek.source = strih(0, 64)
+    obrazek.source = strih(0, 8)
     ui.notify(f"Hlad je {kocka["hlad"]}. \nŽízeň je {kocka["zizen"]}. \nEnergie je {kocka["energie"]}")
     zkontroluj_status()
 
 async def spanek():
     kocka["energie"] = 100
     print(f"Zzz...zzz... \n{kocka['jmeno']} je odpočatý. Energie {kocka['jmeno']} je {kocka['energie']}")
-    obrazek.source = strih(0, 45)
+    obrazek.source = strih(0, 49)
     zprava.text = (f"Zzz...zzz...")
     await asyncio.sleep(1)
     zprava.text = (f"\n{kocka['jmeno']} je odpočatý.")
@@ -98,6 +99,7 @@ def napit():
     kocka["zizen"] -= 10
     print(f"{kocka['jmeno']} se napil. \nŽízeň je {kocka['zizen']}")
     zprava.text = (f"{kocka['jmeno']} se napil.")
+    obrazek.source = strih(3, 36)
     ui.notify(f"Žízeň je {kocka['zizen']}")
     zkontroluj_status()
 
@@ -134,7 +136,7 @@ def zkontroluj_status():
     if kocka["zivoty"] <= 0:
         kocka["zije"] = False
         print(f"{kocka["jmeno"]} umřel.")
-        ui.shutdown()
+        app.shutdown()
         exit()
     hladoveni()
     starnuti()
@@ -157,6 +159,7 @@ def vypis_status():
         Zdraví je: {kocka['zivoty']}
         {kocka['jmeno']} je {"Šťastný" if kocka['nestastnost'] == False else "Nešťastný"}
     """)
+    obrazek.source = strih(0, 1)
 
 def strih(x, y):
     x = x * 64
@@ -171,7 +174,8 @@ def main():
         "Hra": hra,
         "Spánek": spanek,
         "Napít": napit,
-        # "Status": vypis_status,
+        "Status": vypis_status,
+        "reset": reset
 
     }
 
@@ -181,7 +185,7 @@ def main():
         # spritesheet = Image.open("cat.png")
         obrazek = ui.image(strih(0, 1)).classes("h-32 w-32")
         zprava = ui.label("Vítej!")
-        with ui.grid(columns=5):
+        with ui.grid(columns=3, rows=2):
             for jmeno, funkce in tlacitka.items():
                 ui.button(jmeno, on_click=funkce)
 
