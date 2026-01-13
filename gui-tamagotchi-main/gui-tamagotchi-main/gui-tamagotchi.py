@@ -74,16 +74,37 @@ def krmeni():
     ui.notify(f"Hlad je {kocka["hlad"]}")
     zkontroluj_status()
 
+
+def prochazka():
+    kocka["hlad"] += 10
+    kocka["zizen"] += 10
+    kocka["energie"] -= 10
+    kocka["cisota"] -= 15
+    zprava.text = (f"{kocka["jmeno"]} je velmi šťastný.")
+    obrazek.source = strih(0, 5)
+    ui.notify(f"Hlad je {kocka["hlad"]}. Žízeň je {kocka["zizen"]}. Energie je {kocka["energie"]}. Čistota je {kocka["cisota"]}")
+    zkontroluj_status()
+
+
+def koupel():
+    kocka["cisota"] += 10
+    zprava.text = (f"{kocka["jmeno"]} je čistý.")
+    obrazek.source = strih(2, 12)
+    zkontroluj_status()
+
+
 def hra():
     kocka["hlad"] += 10
     kocka["zizen"] += 10
     kocka["energie"] -= 10
+    kocka["cisota"] += 5
     kocka["nestastnost"] = False
     print(f"{kocka["jmeno"]} vypadá šťastně. \nHlad je {kocka["hlad"]}. \nŽízeň je {kocka["zizen"]}. \nEnergie je {kocka["energie"]}")
     zprava.text = (f"{kocka["jmeno"]} je velmi šťastný.")
     obrazek.source = strih(0, 8)
     ui.notify(f"Hlad je {kocka["hlad"]}. \nŽízeň je {kocka["zizen"]}. \nEnergie je {kocka["energie"]}")
     zkontroluj_status()
+
 
 async def spanek():
     kocka["energie"] = 100
@@ -95,6 +116,7 @@ async def spanek():
     ui.notify(f"Energie {kocka['jmeno']} je {kocka['energie']}")
     zkontroluj_status()
 
+
 def napit():
     kocka["zizen"] -= 10
     print(f"{kocka['jmeno']} se napil. \nŽízeň je {kocka['zizen']}")
@@ -103,6 +125,7 @@ def napit():
     ui.notify(f"Žízeň je {kocka['zizen']}")
     zkontroluj_status()
 
+
 def hladoveni():
     global puvodni_cas
 
@@ -110,7 +133,7 @@ def hladoveni():
     
     if ted > puvodni_cas +dt.timedelta(seconds=10):
         kocka["hlad"] += 10
-        print(f"{kocka["jmeno"]} začína mít hlad")
+        ui.notify(f"{kocka["jmeno"]} začína mít hlad")
         puvodni_cas = ted #nahradit puvodni cas s casem ted
 
 def starnuti():
@@ -120,7 +143,7 @@ def starnuti():
 
     if ted > puvodni_cas +dt.timedelta(hours=1):
         kocka["vek"] += 1
-        print(f"{kocka["jmeno"]} má narozeniny!")
+        ui.notify(f"{kocka["jmeno"]} má narozeniny!")
         puvodni_cas = ted
 
 def zkontroluj_status():
@@ -132,6 +155,9 @@ def zkontroluj_status():
 
     if kocka["energie"] < -20:
         kocka["zivoty"] -= 10
+
+    if kocka["cisota"] < -20:
+        kocka["nestastnost"] -= True
 
     if kocka["zivoty"] <= 0:
         kocka["zije"] = False
@@ -161,6 +187,11 @@ def vypis_status():
     """)
     obrazek.source = strih(0, 1)
 
+
+def exit():
+    save()
+    app.shutdown
+
 def strih(x, y):
     x = x * 64
     y = y * 64
@@ -171,12 +202,18 @@ def main():
 
     tlacitka = {
         "Krmení": krmeni,
-        "Hra": hra,
-        "Spánek": spanek,
         "Napít": napit,
-        "Status": vypis_status,
-        "reset": reset
+        "Hra": hra,
+        "Procházka": prochazka,
+        "Koupel": koupel,
+        "Spánek": spanek,
 
+    }
+
+    tlacitka2 = {
+        "Status": vypis_status,
+        "Exit": exit,
+        "Reset": reset
     }
 
     load()
@@ -187,7 +224,9 @@ def main():
         zprava = ui.label("Vítej!")
         with ui.grid(columns=3, rows=2):
             for jmeno, funkce in tlacitka.items():
-                ui.button(jmeno, on_click=funkce)
+                ui.button(jmeno, on_click=funkce).props("color=amber-200 text-color=emerald-600 rounded")
+            for jmeno, funkce in tlacitka2.items():
+                ui.button(jmeno, on_click=funkce).props("color=red-400 text-color=black rounded")
 
     # print("Vítej!")
     print("""
@@ -222,5 +261,7 @@ def main():
     # save()
     # zkontroluj_status()
 
+ui.query('body').style("background-color: lightblue")
 
 main()
+
