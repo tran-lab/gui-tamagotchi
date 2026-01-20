@@ -190,7 +190,7 @@ def vypis_status():
 
 def exit():
     save()
-    app.shutdown
+    app.shutdown()
 
 def strih(x, y):
     x = x * 64
@@ -264,4 +264,5 @@ def main():
 ui.query('body').style("background-color: lightblue")
 
 main()
+
 
